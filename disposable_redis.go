@@ -8,7 +8,6 @@ package disposable_redis
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 	"os/exec"
 	"strings"
@@ -53,7 +52,7 @@ func (r *Server) run() error {
 
 	select {
 	case e := <-ch:
-		log.Println("Error waiting for process:", e)
+		// log.Println("Error waiting for process:", e)
 		return e
 	case <-time.After(LaunchWaitTimeout):
 		break
@@ -74,7 +73,7 @@ func NewServer(port uint16) (*Server, error) {
 		"--dbfilename", fmt.Sprintf("dump.%d.%d.rdb", port, time.Now().UnixNano()),
 	)
 
-	log.Println("start args: ", cmd.Args)
+	// log.Println("start args: ", cmd.Args)
 
 	r := &Server{
 		cmd:     cmd,
@@ -100,7 +99,7 @@ func NewServerRandomPort() (*Server, error) {
 	var r *Server
 	for i := 0; i < MaxRetries; i++ {
 		port := uint16(rand.Int31n(0xffff-1025) + 1025)
-		log.Println("Trying port ", port)
+		// log.Println("Trying port ", port)
 
 		r, err = NewServer(port)
 		if err == nil {
@@ -108,7 +107,7 @@ func NewServerRandomPort() (*Server, error) {
 		}
 	}
 
-	log.Println("Could not start throwaway redis")
+	// log.Println("Could not start throwaway redis")
 	return nil, err
 
 }
@@ -124,7 +123,7 @@ func (r *Server) WaitReady(timeout time.Duration) error {
 
 		conn, e := redigo.Dial("tcp", fmt.Sprintf("localhost:%d", r.port))
 		if e != nil {
-			log.Println("Could not connect, waiting 5ms")
+			// log.Println("Could not connect, waiting 5ms")
 			err = e
 			time.Sleep(5 * time.Millisecond)
 		} else {
